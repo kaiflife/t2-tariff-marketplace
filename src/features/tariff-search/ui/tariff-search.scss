@@ -1,0 +1,128 @@
+// Палитра бренда t2 и общие переменные для витрины
+$color-bg: #111111;
+$color-surface: #1a1a1a;
+$color-border: #333333;
+$color-text-main: #ffffff;
+$color-text-muted: #888888;
+$color-accent: #00ffff; // Акцентный неоновый цвет для кнопок/цен в цифровых каналах
+$border-radius: 12px;
+$transition-speed: 0.25s;
+
+.tariff-search-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  color: $color-text-main;
+
+  // Стилизация инпута поиска
+  .tariff-search-input {
+    width: 100%;
+    padding: 16px 20px;
+    font-size: 1.1rem;
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+    color: $color-text-main;
+    outline: none;
+    transition:
+      border-color $transition-speed ease,
+      box-shadow $transition-speed ease;
+    margin-bottom: 30px;
+
+    &::placeholder {
+      color: $color-text-muted;
+    }
+
+    &:focus {
+      border-color: $color-text-main;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  // Индикатор загрузки (Лоадер)
+  .loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1rem;
+    color: $color-text-muted;
+    margin: 40px 0;
+
+    // Элегантная анимация пульсации для имитации поиска
+    &::before {
+      content: '';
+      width: 18px;
+      height: 18px;
+      border: 2px solid $color-text-muted;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+
+  // Сетка карточек тарифов (адаптивный Grid)
+  .tariffs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  // Карточка отдельного тарифа
+  .tariff-card {
+    background-color: $color-surface;
+    border: 1px solid $color-border;
+    border-radius: $border-radius;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 180px;
+    transition:
+      transform $transition-speed ease,
+      border-color $transition-speed ease,
+      box-shadow $transition-speed ease;
+    cursor: pointer;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+
+    h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0 0 10px 0;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      font-size: 1rem;
+      color: $color-text-muted;
+      margin: 0 0 20px 0;
+    }
+
+    // Блок цены тарифа
+    .price {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: $color-text-main;
+      align-self: flex-start;
+      border-bottom: 2px solid $color-border;
+      padding-bottom: 4px;
+      transition: border-color $transition-speed ease;
+    }
+
+    &:hover .price {
+      border-color: $color-text-main;
+    }
+  }
+}
+
+// Ключевые кадры для вращения лоадера
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

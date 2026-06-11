@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '@/app/hooks';
 import { fetchTariffsRequest, selectTariffsList, selectTariffsLoading } from '@/entities';
-import './TariffSearch.scss';
+import './tariff-search.scss';
 
 export const TariffSearch = () => {
   const dispatch = useAppDispatch();
