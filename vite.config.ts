@@ -1,10 +1,14 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev
 export default defineConfig({
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom', // для тестирования компонентов, если понадобится
+  },
   resolve: {
     alias: {
       // Настраиваем абсолютные импорты для Feature-Sliced Design архитектуры

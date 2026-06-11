@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchTariffsRequest } from '../../../entities/tariff/model/actions';
-import { selectTariffsList, selectTariffsLoading } from '../../../entities/tariff/model/selectors';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+
+import { useAppDispatch } from '@/app/hooks';
+import { fetchTariffsRequest, selectTariffsList, selectTariffsLoading } from '@/entities';
 import './TariffSearch.scss';
 
-export const TariffSearch: React.FC = () => {
-  const dispatch = useDispatch();
-  const [input, setInput] = useState<string>('');
-  
+export const TariffSearch = () => {
+  const dispatch = useAppDispatch();
+  const [input, setInput] = useState('');
+
   const tariffs = useSelector(selectTariffsList);
   const isLoading = useSelector(selectTariffsLoading);
 
@@ -30,14 +31,16 @@ export const TariffSearch: React.FC = () => {
         placeholder="Поиск тарифа (например, Мой онлайн)..."
         className="tariff-search-input"
       />
-      
+
       {isLoading && <div className="loader">Загрузка актуальных тарифов t2...</div>}
-      
+
       <div className="tariffs-grid">
-        {tariffs.map(tariff => (
+        {tariffs.map((tariff) => (
           <div key={tariff.id} className="tariff-card">
             <h3>{tariff.name}</h3>
-            <p>{tariff.gb} ГБ · {tariff.minutes} мин</p>
+            <p>
+              {tariff.gb} ГБ · {tariff.minutes} мин
+            </p>
             <span className="price">{tariff.price} ₽/мес</span>
           </div>
         ))}

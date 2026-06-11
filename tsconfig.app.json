@@ -19,7 +19,12 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    // Настраиваем маппинг алиаса @/ на папку src/
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src"]
 }
