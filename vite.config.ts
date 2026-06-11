@@ -4,6 +4,7 @@ import { defineConfig } from 'vitest/config';
 
 // https://vitejs.dev
 export default defineConfig({
+  base: '/t2-tariff-marketplace/',
   plugins: [react()],
   test: {
     globals: true,

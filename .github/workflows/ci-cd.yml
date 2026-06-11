@@ -1,0 +1,53 @@
+name: T2 Digital Frontend CI/CD
+
+# Триггеры запуска пайплайна
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Разрешения для работы GitHub Pages
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Клонируем репозиторий на виртуальную машину
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем Node.js актуальной LTS версии
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      # 3. Устанавливаем зависимости проекта
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Проверяем кодстайл с помощью ESLint
+      - name: Run Linter (ESLint)
+        run: npm run lint
+
+      # 5. Запускаем наши юнит-тесты в Vitest (в режиме одиночного прогона)
+      - name: Run Unit Tests (Vitest)
+        run: npx vitest run
+
+      # 6. Собираем продакшн-бандл приложения
+      - name: Build Application
+        run: npm run build
+
+      # 7. Автоматический деплой собранной папки 'dist' в ветку gh-pages
+      # (Шаг сработает только при пуше в ветку main)
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
