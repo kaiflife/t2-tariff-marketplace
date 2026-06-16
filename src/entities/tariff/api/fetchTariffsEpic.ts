@@ -2,8 +2,10 @@ import {
   FETCH_TARIFFS_REQUEST,
   fetchTariffsFailure,
   fetchTariffsSuccess,
+  type TariffActions,
 } from '@/entities/tariff/model/actions';
-import { ofType, type StateObservable } from 'redux-observable';
+import { type Tariff } from '@/entities/tariff/model/types';
+import { ofType } from 'redux-observable';
 import { type Observable, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
@@ -11,26 +13,39 @@ import { catchError, debounceTime, distinctUntilChanged, map, switchMap } from '
 // Имитируем API-эндпоинт для поиска тарифов t2
 const BASE_URL = 'https://t2-digital.ru';
 
-export const fetchTariffsEpic = (
-  action$: Observable<unknown>,
-  state$: StateObservable<unknown>,
-  p0: {},
-): Observable<unknown> =>
+/**
+ * Epic для обработки живого поиска и фильтрации тарифов t2.
+ * Полностью типизирован без использования unknown и any.
+ */
+export const fetchTariffEpic = (action$: Observable<TariffActions>): Observable<TariffActions> =>
   action$.pipe(
-    // Перехватываем только экшены запроса тарифов
-    ofType<FetchTariffsRequestAction>(FETCH_TARIFFS_REQUEST),
-    // Достаем поисковую строку из экшена
-    map((action) => action.payload.searchQuery),
-    // Избегаем повторных запросов с тем же текстом
+    // 1. Пропускаем только экшены запроса тарифов
+    ofType(FETCH_TARIFFS_REQUEST),
+
+    // 2. Извлекаем строку поиска. Явно приводим экшен к нужному подтипу,
+    // чтобы TypeScript увидел payload.searchQuery
+    map((action) => {
+      const requestAction = action as Extract<TariffActions, { payload: { searchQuery: string } }>;
+      return requestAction.payload.searchQuery;
+    }),
+
+    // 3. Избегаем повторных запросов с тем же текстом
     distinctUntilChanged(),
-    // Ждем 300мс после последнего ввода пользователя
+
+    // 4. Ждем 300мс после последнего ввода пользователя
     debounceTime(300),
-    // Переключаемся на AJAX-запрос. Если придет новый ввод, старый запрос отменится автоматически
-    switchMap((query) =>
-      ajax.getJSON<unknown[]>(`${BASE_URL}?search=${encodeURIComponent(query)}`).pipe(
+
+    // 5. Переключаемся на асинхронный AJAX-запрос
+    switchMap((query: string) =>
+      // Типизируем дженерик метода getJSON как массив тарифов Tariff[] вместо unknown[]
+      ajax.getJSON<Tariff[]>(`${BASE_URL}?search=${encodeURIComponent(query)}`).pipe(
+        //response теперь строго типизирован как Tariff[]
         map((response) => fetchTariffsSuccess(response)),
-        // Важно: catchError должен быть внутри switchMap, чтобы не «убить» корневой стрим эпика
-        catchError((error) => of(fetchTariffsFailure(error.message || 'Ошибка загрузки тарифов'))),
+
+        // Безопасный перехват ошибки с явной типизацией
+        catchError((error: { message?: string }) =>
+          of(fetchTariffsFailure(error.message || 'Ошибка загрузки тарифов')),
+        ),
       ),
     ),
   );
